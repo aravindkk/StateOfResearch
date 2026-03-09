@@ -10,5 +10,6 @@ if [ -z "$ANTHROPIC_API_KEY" ]; then
   echo ""
 fi
 
-echo "Starting State of Research on http://localhost:8000"
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+PORT=${PORT:-8000}
+echo "Starting State of Research on http://localhost:$PORT"
+python -m uvicorn main:app --host 0.0.0.0 --port "$PORT" --reload
