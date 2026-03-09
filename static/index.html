@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>State of Research — AI Paper Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header id="site-header">
+    <div class="header-inner">
+      <div class="logo" onclick="resetToHome()">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">State<span class="logo-accent">of</span>Research</span>
+      </div>
+      <div id="header-search" class="header-search hidden">
+        <input
+          type="text"
+          id="header-query-input"
+          placeholder="Search research topics..."
+          autocomplete="off"
+        />
+        <button id="header-search-btn" onclick="triggerSearch()">Search</button>
+      </div>
+      <div class="header-actions">
+        <span id="api-status" class="api-badge"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Powered by arxiv + Claude AI</div>
+      <h1 class="hero-title">
+        What is the<br />
+        <span class="gradient-text">State of Research?</span>
+      </h1>
+      <p class="hero-subtitle">
+        Search any topic. We scrape the latest papers from arxiv and synthesize
+        an expert narrative — state of the art, active frontiers, and where the
+        world is headed in the next 3–5 years.
+      </p>
+
+      <div class="search-box">
+        <div class="search-input-wrap">
+          <span class="search-icon">⌕</span>
+          <input
+            type="text"
+            id="main-query-input"
+            placeholder="e.g. large language models, world models, AI agents..."
+            autocomplete="off"
+          />
+          <button id="main-search-btn" class="search-btn" onclick="triggerSearch()">
+            <span>Analyze</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+        <div class="quick-chips">
+          <span class="chip-label">Quick searches:</span>
+          <button class="chip" onclick="quickSearch('large language models')">LLMs</button>
+          <button class="chip" onclick="quickSearch('large reasoning models')">LRMs</button>
+          <button class="chip" onclick="quickSearch('world models')">World Models</button>
+          <button class="chip" onclick="quickSearch('AI agents autonomous')">AI Agents</button>
+          <button class="chip" onclick="quickSearch('diffusion models')">Diffusion</button>
+          <button class="chip" onclick="quickSearch('multimodal learning')">Multimodal</button>
+          <button class="chip" onclick="quickSearch('reinforcement learning from human feedback')">RLHF</button>
+          <button class="chip" onclick="quickSearch('vision language models')">VLMs</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="results" class="results hidden">
+    <div class="results-header">
+      <div class="results-meta">
+        <h2 id="results-query-title"></h2>
+        <span id="results-count" class="results-count"></span>
+      </div>
+      <div class="results-actions">
+        <button class="action-btn" onclick="copyNarrative()" id="copy-btn" title="Copy narrative as Markdown">
+          <span>Copy</span>
+        </button>
+        <button class="action-btn secondary" onclick="resetToHome()">New Search</button>
+      </div>
+    </div>
+
+    <div class="results-layout">
+      <!-- Left: Paper List -->
+      <aside class="papers-panel" id="papers-panel">
+        <div class="panel-header">
+          <span class="panel-title">Papers Found</span>
+          <span id="paper-count-badge" class="count-badge">0</span>
+        </div>
+        <div id="papers-list" class="papers-list"></div>
+      </aside>
+
+      <!-- Right: Narrative -->
+      <main class="narrative-panel" id="narrative-panel">
+        <div class="panel-header">
+          <span class="panel-title">Research Intelligence Report</span>
+          <span id="narrative-status" class="narrative-status">Generating...</span>
+        </div>
+        <div id="narrative-content" class="narrative-content">
+          <div id="narrative-loading" class="narrative-loading">
+            <div class="loading-orb"></div>
+            <p>Analyzing <span id="loading-count">0</span> papers with Claude AI...</p>
+            <p class="loading-sub">Synthesizing state of the art, frontiers, and future impact</p>
+          </div>
+          <div id="narrative-body" class="narrative-body hidden"></div>
+          <div id="narrative-error" class="narrative-error hidden"></div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="site-footer">
+    <p>Sources from <a href="https://arxiv.org" target="_blank">arxiv.org</a> · Analysis by Claude AI · Not affiliated with arxiv or Anthropic</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
