@@ -256,6 +256,36 @@ a:hover { text-decoration: underline; }
 
 #main-query-input::placeholder { color: var(--text-dim); }
 
+.category-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: border-color 0.2s, color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 56px;
+  text-align: center;
+}
+
+.category-select:hover,
+.category-select:focus {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.category-select option {
+  background: var(--card);
+  color: var(--text);
+}
+
 .search-btn {
   display: flex;
   align-items: center;

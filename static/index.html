@@ -58,6 +58,13 @@
             placeholder="e.g. large language models, world models, AI agents..."
             autocomplete="off"
           />
+          <select id="main-category-select" class="category-select" title="arxiv category">
+            <option value="cs">CS</option>
+            <option value="stat">Stat</option>
+            <option value="eess">EESS</option>
+            <option value="q-bio">q-bio</option>
+            <option value="">All</option>
+          </select>
           <button id="main-search-btn" class="search-btn" onclick="triggerSearch()">
             <span>Analyze</span>
             <span class="btn-arrow">→</span>
@@ -88,6 +95,12 @@
       <div class="results-actions">
         <button class="action-btn" onclick="copyNarrative()" id="copy-btn" title="Copy narrative as Markdown">
           <span>Copy</span>
+        </button>
+        <button class="action-btn" onclick="exportMarkdown()" id="export-btn" title="Download narrative as .md file">
+          <span>Export .md</span>
+        </button>
+        <button class="action-btn secondary" id="reanalyze-btn" onclick="reAnalyze()" title="Regenerate the narrative">
+          Re-analyze
         </button>
         <button class="action-btn secondary" onclick="resetToHome()">New Search</button>
       </div>

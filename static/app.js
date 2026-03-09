@@ -1,6 +1,8 @@
 // ── State ─────────────────────────────────────────────────────────────────
 let currentPapers = [];
 let narrativeMarkdown = "";
+let currentQuery = "";
+let currentCategory = "cs";
 
 // ── Init ──────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,9 +61,15 @@ async function triggerSearch() {
     return;
   }
 
+  const categorySelect = document.getElementById("main-category-select");
+  const category = categorySelect ? categorySelect.value : "cs";
+
   // Sync both inputs
   heroInput.value = query;
   headerInput.value = query;
+
+  currentQuery = query;
+  currentCategory = category;
 
   // Show results section, hide hero
   showResultsSection(query);
@@ -72,7 +80,7 @@ async function triggerSearch() {
   try {
     // Step 1: Scrape papers
     updateNarrativeStatus("Fetching papers from arxiv...", false);
-    const papers = await fetchPapers(query);
+    const papers = await fetchPapers(query, category);
 
     if (papers.length === 0) {
       showNarrativeError(
@@ -90,6 +98,31 @@ async function triggerSearch() {
     // Step 2: Stream analysis
     updateNarrativeStatus("Generating analysis...", false);
     await streamAnalysis(query, papers);
+  } catch (err) {
+    showNarrativeError(err.message || "An unexpected error occurred.");
+  } finally {
+    setSearching(false);
+  }
+}
+
+// ── Re-analyze ────────────────────────────────────────────────────────────
+async function reAnalyze() {
+  if (!currentPapers.length || !currentQuery) return;
+
+  // Reset narrative area
+  narrativeMarkdown = "";
+  document.getElementById("narrative-body").innerHTML = "";
+  document.getElementById("narrative-body").classList.add("hidden");
+  document.getElementById("narrative-loading").classList.remove("hidden");
+  document.getElementById("narrative-error").classList.add("hidden");
+  document.getElementById("copy-btn").classList.add("hidden");
+  document.getElementById("export-btn").classList.add("hidden");
+  document.getElementById("loading-count").textContent = currentPapers.length;
+  updateNarrativeStatus("Regenerating analysis...", false);
+
+  setSearching(true);
+  try {
+    await streamAnalysis(currentQuery, currentPapers);
   } catch (err) {
     showNarrativeError(err.message || "An unexpected error occurred.");
   } finally {
@@ -118,14 +151,17 @@ function showResultsSection(query) {
   document.getElementById("paper-count-badge").textContent = "0";
 
   updateNarrativeStatus("Starting...", false);
+
+  document.getElementById("export-btn").classList.add("hidden");
+  document.getElementById("reanalyze-btn").classList.add("hidden");
 }
 
 // ── Fetch papers ──────────────────────────────────────────────────────────
-async function fetchPapers(query) {
+async function fetchPapers(query, category = "cs") {
   const res = await fetch("/api/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, max_papers: 50 }),
+    body: JSON.stringify({ query, max_papers: 50, category }),
   });
 
   if (!res.ok) {
@@ -236,6 +272,8 @@ async function streamAnalysis(query, papers) {
     bodyEl.innerHTML = marked.parse(narrativeMarkdown);
     updateNarrativeStatus("Complete", true);
     document.getElementById("copy-btn").classList.remove("hidden");
+    document.getElementById("export-btn").classList.remove("hidden");
+    document.getElementById("reanalyze-btn").classList.remove("hidden");
   }
 }
 
@@ -280,6 +318,25 @@ function resetToHome() {
   document.getElementById("header-query-input").value = "";
   narrativeMarkdown = "";
   currentPapers = [];
+  currentQuery = "";
+  currentCategory = "cs";
+}
+
+// ── Export narrative as .md ───────────────────────────────────────────────
+function exportMarkdown() {
+  if (!narrativeMarkdown) return;
+  const filename = (currentQuery || "research")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 60) + ".md";
+  const blob = new Blob([narrativeMarkdown], { type: "text/markdown" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Copy narrative ────────────────────────────────────────────────────────
